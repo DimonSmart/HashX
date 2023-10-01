@@ -1,49 +1,39 @@
 ﻿namespace DimonSmart.HashX;
 
-public class HashXor
+public class HashXor : IHash
 {
-    private byte[] _bytes;
-    private int currentXorPositionForAdd;
-    private int currentXorPositionForSubtract;
-
+    protected byte[] _bytes;
+    protected int currentXorPositionForAdd = 0;
+    protected int _lengthInBits;
     public HashXor(int hashLength)
     {
         _bytes = new byte[hashLength];
-        currentXorPositionForAdd = 0;
-        currentXorPositionForSubtract = 0;
+        _lengthInBits = 8 * _bytes.Length;
     }
 
     public void AddByte(byte incomingByte)
     {
-        int startPos = currentXorPositionForAdd / 8;
-        int endPos = (currentXorPositionForAdd + 8) / 8;
+        currentXorPositionForAdd = XorByte(incomingByte, currentXorPositionForAdd);
+    }
 
-        // XOR the incoming byte with the current position in the byte array
-        _bytes[startPos % _bytes.Length] ^= (byte)(incomingByte << (currentXorPositionForAdd % 8));
-        if (endPos != startPos)
+    protected int XorByte(byte incomingByte, int position)
+    {
+        var firstBytePos = (position / 8) % _bytes.Length;
+        var secondBytePos = ((position + 8) / 8) % _bytes.Length;
+
+        var shift = position % 8;
+        var incomingPartForFirstByte = (byte)(incomingByte << shift);
+        _bytes[firstBytePos] ^= incomingPartForFirstByte;
+
+        if (shift != 0)
         {
-            _bytes[endPos % _bytes.Length] ^= (byte)(incomingByte >> (8 - (currentXorPositionForAdd % 8)));
+            var incomingPartForSecondByte = (byte)(incomingByte >> (8 - shift));
+            _bytes[secondBytePos] ^= incomingPartForSecondByte;
         }
 
-        // Increment the current position
-        currentXorPositionForAdd = (currentXorPositionForAdd + (8 * _bytes.Length)) % (8 * _bytes.Length);
-
-        if (currentXorPositionForAdd - currentXorPositionForSubtract > 8 * _bytes.Length)
-        {
-            SubtractByte();
-        }
+        position = (position + 1) % _lengthInBits;
+        return position;
     }
 
-    public void SubtractByte()
-    {
-        byte removedByte = _bytes[currentXorPositionForSubtract / 8];
-        _bytes[currentXorPositionForSubtract / 8] ^= (byte)(removedByte << (currentXorPositionForSubtract % 8)); // Zero out the removed byte
-        currentXorPositionForSubtract = (currentXorPositionForSubtract + 8) % (8 * _bytes.Length);
-    }
-
-    public byte[] GetBytes()
-    {
-        return _bytes;
-    }
+    public byte[] GetBytes() => _bytes;
 }
-

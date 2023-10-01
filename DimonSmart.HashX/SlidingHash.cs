@@ -1,32 +1,43 @@
 ﻿namespace DimonSmart.HashX;
 
-
 public class SlidingHash
 {
-    private HashXor _hashXor;
+    private HashRoller _hashRoller;
     private Queue<byte> _slidingBuffer;
 
     public SlidingHash(int hashLength, int slidingBufferSize)
     {
-        _hashXor = new HashXor(hashLength);
+        _hashRoller = new HashRoller(hashLength);
         _slidingBuffer = new Queue<byte>(slidingBufferSize);
     }
 
     public void Add(byte incomingByte)
     {
-        _hashXor.AddByte(incomingByte);
+        _hashRoller.AddByte(incomingByte);
         _slidingBuffer.Enqueue(incomingByte);
 
-        if (_slidingBuffer.Count > _hashXor.GetBytes().Length)
+        if (_slidingBuffer.Count > _hashRoller.GetBytes().Length)
         {
-            _hashXor.SubtractByte();
-            _slidingBuffer.Dequeue();
+            var outgoingByte = _slidingBuffer.Dequeue();
+            _hashRoller.SubstractByte(outgoingByte);
         }
     }
 
-    public byte[] GetHash()
+    public byte[] GetHash() => _hashRoller.GetBytes();
+
+    internal class HashRoller : HashXor
     {
-        return _hashXor.GetBytes();
+        private int currentXorPositionForSubtract = 0;
+
+        public HashRoller(int hashLength) : base(hashLength)
+        {
+        }
+
+        public void SubstractByte(byte incomingByte)
+        {
+            currentXorPositionForSubtract = XorByte(incomingByte, currentXorPositionForSubtract);
+        }
     }
+
 }
 
