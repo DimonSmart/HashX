@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DimonSmart.AnyHas.ResearchTool": {
+      "commandName": "Project",
+      "commandLineArgs": "--HashedBlockLength 4 --HashSize 4 .\\Data"
+    }
+  }
+}
