@@ -2,7 +2,7 @@
   "profiles": {
     "DimonSmart.AnyHas.ResearchTool": {
       "commandName": "Project",
-      "commandLineArgs": "--HashedBlockLength 4 --HashSize 4 .\\Data"
+      "commandLineArgs": "--MinHashLength 1 --MaxHashLength 20 --BufferSize 4 .\\Data"
     }
   }
 }

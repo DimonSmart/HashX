@@ -3,8 +3,8 @@
 public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
 {
     protected byte[] Bytes;
-    protected int LengthInBits;
     protected int CurrentXorPositionForAdd;
+    protected int LengthInBits;
 
     public XorHash(int hashSize)
     {
@@ -13,7 +13,9 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
         LengthInBits = 8 * HashSize;
     }
 
-    public int HashSize { get; private set; }
+    public int HashSize { get; }
+
+    public string Name => "XorHash";
 
     public byte[] ComputeHash(byte[] buffer)
     {
@@ -21,31 +23,25 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
         return ComputeHashCore(buffer, 0, buffer.Length);
     }
 
-    public byte[] ComputeHashCore(byte[] buffer, int offset, int count)
-    {
-        for (var index = offset; index < offset + count; index++)
-        {
-            AddByte(buffer[index]);
-        }
-
-        return (byte[])Bytes.Clone();
-    }
     public byte[] ComputeHash(byte[] buffer, int offset, int count)
     {
         ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
         if (offset < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count < 0 || count > buffer.Length)
-            throw new ArgumentException();
-        if (buffer.Length - count < offset)
-            throw new ArgumentException();
-        return ComputeHashCore(buffer, offset, count);
-    }
+        }
 
-    private void Reset()
-    {
-        CurrentXorPositionForAdd = 0;
-        Bytes.Initialize();
+        if (count < 0 || count > buffer.Length)
+        {
+            throw new ArgumentException();
+        }
+
+        if (buffer.Length - count < offset)
+        {
+            throw new ArgumentException();
+        }
+
+        return ComputeHashCore(buffer, offset, count);
     }
 
     public void AddByte(byte incomingByte)
@@ -56,6 +52,19 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
     public byte[] GetBytes()
     {
         return Bytes;
+    }
+
+    public byte[] ComputeHashCore(byte[] buffer, int offset, int count)
+    {
+        for (var index = offset; index < offset + count; index++) AddByte(buffer[index]);
+
+        return (byte[])Bytes.Clone();
+    }
+
+    private void Reset()
+    {
+        CurrentXorPositionForAdd = 0;
+        Bytes.Initialize();
     }
 
     protected int XorByte(byte incomingByte, int position)

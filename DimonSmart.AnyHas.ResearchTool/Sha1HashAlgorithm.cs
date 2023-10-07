@@ -3,18 +3,18 @@ using DimonSmart.AnyHash;
 
 namespace DimonSmart.AnyHas.ResearchTool;
 
-public class Md5HashAlgorithm : IHashAlgorithm
+public class Sha1HashAlgorithm : IHashAlgorithm
 {
-    public int HashSize => MD5.HashSizeInBytes;
-    public string Name => "MD5";
+    public int HashSize => SHA1.HashSizeInBytes;
+    public string Name => "SHA1";
 
     public byte[] ComputeHash(byte[] buffer)
     {
-        return MD5.HashData(buffer);
+        return SHA1.HashData(buffer);
     }
 
     public byte[] ComputeHash(byte[] buffer, int offset, int count)
     {
-        return MD5.HashData(buffer.AsSpan(offset, count));
+        return SHA1.HashData(buffer.AsSpan(offset, count));
     }
 }

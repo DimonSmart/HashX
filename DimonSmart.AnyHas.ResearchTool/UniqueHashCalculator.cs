@@ -4,43 +4,30 @@ namespace DimonSmart.AnyHas.ResearchTool;
 
 public static class UniqueHashCalculator
 {
-    public static IEnumerable<UniqueCalculationResult> Calculate(IEnumerable<string> files, OneRunParameters parameters)
+    public static UniqueCalculationResult Calculate(IHashAlgorithm hashAlgorithm, IEnumerable<string> files,
+        int bufferSize)
     {
-        var xorHashAlgorithm = AnyHashFactory.CreateHashAlgorithm(parameters.HashLength);
-        var md5HashAlgorithm = new Md5HashAlgorithm();
+        Dictionary<byte[], int> uniqueHashCounter = new(10000, new ByteArrayEqualityComparer());
+        UniqueCalculationResult result = new(hashAlgorithm.Name, 0, 0, bufferSize, hashAlgorithm.HashSize);
 
-        Dictionary<byte[], int> xorUniqueHashCounter = new(10000, new ByteArrayEqualityComparer());
-        Dictionary<byte[], int> md5UniqueHashCounter = new(10000, new ByteArrayEqualityComparer());
-
-        UniqueCalculationResult xorResult = new("XOR",0, 0);
-        UniqueCalculationResult md5Result = new("MD5", 0, 0);
         foreach (var file in files)
         {
             var bytes = File.ReadAllBytes(file);
-            for (var i = 0; i <= bytes.Length - parameters.BufferSize; i++)
-            {
-                CalculateCollisions(parameters.BufferSize, xorHashAlgorithm, bytes, i, xorUniqueHashCounter);
-                CalculateCollisions(parameters.BufferSize, md5HashAlgorithm, bytes, i, md5UniqueHashCounter);
-            }
+            for (var i = 0; i <= bytes.Length - bufferSize; i++)
+                CalculateCollisions(bufferSize, hashAlgorithm, bytes, i, uniqueHashCounter);
 
-            xorResult = xorResult with
+            result = result with
             {
-                BlocksHashed = xorResult.BlocksHashed + bytes.Length - parameters.BufferSize,
-                UniqueHashes = xorResult.UniqueHashes + xorUniqueHashCounter.Keys.Count
-            };
-
-            md5Result = md5Result with
-            {
-                BlocksHashed = md5Result.BlocksHashed + bytes.Length - parameters.BufferSize,
-                UniqueHashes = md5Result.UniqueHashes + md5UniqueHashCounter.Keys.Count
+                BlocksHashed = result.BlocksHashed + bytes.Length - result.BufferSize,
+                UniqueHashes = result.UniqueHashes + uniqueHashCounter.Keys.Count
             };
         }
 
-        return new []{xorResult, md5Result};
+        return result;
     }
 
     private static void CalculateCollisions(int bufferSize, IHashAlgorithm xorHashAlgorithm, byte[] bytes, int i,
-        Dictionary<byte[], int> uniqueHashCounter)
+        IDictionary<byte[], int> uniqueHashCounter)
     {
         var xorHash = xorHashAlgorithm.ComputeHash(bytes, i, bufferSize);
         if (uniqueHashCounter.TryGetValue(xorHash, out var counter))
