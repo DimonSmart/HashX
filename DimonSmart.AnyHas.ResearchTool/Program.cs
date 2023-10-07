@@ -9,10 +9,14 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var bufferSizeArg = new Option<int>(
-            "--BufferSize",
+        var minBufferSizeArg = new Option<int>(
+            "--MinBufferSize",
             () => 1,
-            "Buffer size (hashed block), bytes.");
+            "Max Buffer size (hashed block), bytes.");
+        var maxBufferSizeArg = new Option<int>(
+            "--MaxBufferSize",
+            () => 1,
+            "Max Buffer size (hashed block), bytes.");
         var minHashLengthArg = new Option<int>(
             "--MinHashLength",
             () => 2,
@@ -28,29 +32,39 @@ internal class Program
             "Root folder for hash collision statistic calculation.");
 
         var rootCommand = new RootCommand("Hash collision research");
-        rootCommand.AddOption(bufferSizeArg);
+        rootCommand.AddOption(minBufferSizeArg);
+        rootCommand.AddOption(maxBufferSizeArg);
         rootCommand.AddOption(minHashLengthArg);
         rootCommand.AddOption(maxHashLengthArg);
         rootCommand.AddArgument(rootFolderArg);
 
         rootCommand.SetHandler(
-            (bufferSize, minHashLength, maxHashLength, rootFolder) =>
+            (minBufferSize, maxBufferSize, minHashLength, maxHashLength, rootFolder) =>
             {
                 var files = Directory.EnumerateFiles(rootFolder).ToList();
                 var results = new ConcurrentBag<UniqueCalculationResult>();
-
-                // MD5 - like baseline (16 bytes)
-                results.Add(UniqueHashCalculator.Calculate(new Md5HashAlgorithm(), files, bufferSize));
-                // SHA1 - best results expectation
-                results.Add(UniqueHashCalculator.Calculate(new Sha1HashAlgorithm(), files, bufferSize));
-
-                // XorHash. Size variation from minHashLength to MaxHashLength (SHA1 length)
-
-                Parallel.For(minHashLength, maxHashLength, i =>
+                for (int bufferSize = minBufferSize; bufferSize < maxBufferSize; bufferSize++)
                 {
-                    var xorHashAlgorithm = AnyHashFactory.CreateHashAlgorithm(i);
-                    results.Add(UniqueHashCalculator.Calculate(xorHashAlgorithm, files, bufferSize));
-                });
+                    Console.WriteLine($"BufferSize:{bufferSize}");
+
+                    // MD5 - like baseline (16 bytes)
+                    var md5Result = UniqueHashCalculator.Calculate(new Md5HashAlgorithm(), files, bufferSize);
+                    results.Add(md5Result);
+                    Console.WriteLine($"MD5:{md5Result}");
+
+                    // SHA1 - best results expectation
+                    var sha1Result = UniqueHashCalculator.Calculate(new Sha1HashAlgorithm(), files, bufferSize);
+                    results.Add(sha1Result);
+                    Console.WriteLine($"MD5:{sha1Result}");
+
+                    // XorHash. Size variation from minHashLength to MaxHashLength (SHA1 length)
+
+                    Parallel.For(minHashLength, maxHashLength, i =>
+                    {
+                        var xorHashAlgorithm = AnyHashFactory.CreateHashAlgorithm(i);
+                        results.Add(UniqueHashCalculator.Calculate(xorHashAlgorithm, files, bufferSize));
+                    });
+                }
 
                 File.WriteAllText("HashStatistics.json", JsonSerializer.Serialize(results));
                 foreach (var result in results)
@@ -58,7 +72,7 @@ internal class Program
                     Console.WriteLine($"{result}");
                 }
             },
-            bufferSizeArg, minHashLengthArg, maxHashLengthArg, rootFolderArg);
+            minBufferSizeArg, maxBufferSizeArg, minHashLengthArg, maxHashLengthArg, rootFolderArg);
         rootCommand.Invoke(args);
     }
 }
