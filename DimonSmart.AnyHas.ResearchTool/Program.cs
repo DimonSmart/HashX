@@ -41,33 +41,46 @@ internal class Program
         rootCommand.SetHandler(
             (minBufferSize, maxBufferSize, minHashLength, maxHashLength, rootFolder) =>
             {
-                var files = Directory.EnumerateFiles(rootFolder).ToList();
-                var results = new ConcurrentBag<UniqueCalculationResult>();
-                for (int bufferSize = minBufferSize; bufferSize < maxBufferSize; bufferSize++)
+                var files = Directory.EnumerateFiles(rootFolder)
+                    .Where(f => new FileInfo(f).Length > maxBufferSize)
+                    .ToList();
+                var finalResults = new ConcurrentBag<UniqueCalculationResult>();
+                for (var bufferSize = minBufferSize; bufferSize < maxBufferSize; bufferSize++)
                 {
                     Console.WriteLine($"BufferSize:{bufferSize}");
+                    // ZeroHash = highest possible result
+                    var zeroHashResult =
+                        UniqueHashCalculator.Calculate(new ZeroHashAlgorithm(bufferSize), files, bufferSize);
+                    finalResults.Add(zeroHashResult);
+                    Console.WriteLine(zeroHashResult);
 
                     // MD5 - like baseline (16 bytes)
                     var md5Result = UniqueHashCalculator.Calculate(new Md5HashAlgorithm(), files, bufferSize);
-                    results.Add(md5Result);
-                    Console.WriteLine($"MD5:{md5Result}");
+                    finalResults.Add(md5Result);
+                    Console.WriteLine(md5Result);
 
                     // SHA1 - best results expectation
                     var sha1Result = UniqueHashCalculator.Calculate(new Sha1HashAlgorithm(), files, bufferSize);
-                    results.Add(sha1Result);
-                    Console.WriteLine($"MD5:{sha1Result}");
+                    finalResults.Add(sha1Result);
+                    Console.WriteLine(sha1Result);
 
                     // XorHash. Size variation from minHashLength to MaxHashLength (SHA1 length)
 
                     Parallel.For(minHashLength, maxHashLength, i =>
                     {
                         var xorHashAlgorithm = AnyHashFactory.CreateHashAlgorithm(i);
-                        results.Add(UniqueHashCalculator.Calculate(xorHashAlgorithm, files, bufferSize));
+                        var xorResult = UniqueHashCalculator.Calculate(xorHashAlgorithm, files, bufferSize);
+                        lock (files)
+                        {
+                            Console.WriteLine(xorResult);
+                        }
+
+                        finalResults.Add(xorResult);
                     });
                 }
 
-                File.WriteAllText("HashStatistics.json", JsonSerializer.Serialize(results));
-                foreach (var result in results)
+                File.WriteAllText("HashStatistics.json", JsonSerializer.Serialize(finalResults));
+                foreach (var result in finalResults)
                 {
                     Console.WriteLine($"{result}");
                 }

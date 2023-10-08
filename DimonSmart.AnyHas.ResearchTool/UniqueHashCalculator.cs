@@ -26,10 +26,10 @@ public static class UniqueHashCalculator
         return result;
     }
 
-    private static void CalculateCollisions(int bufferSize, IHashAlgorithm xorHashAlgorithm, byte[] bytes, int i,
+    private static void CalculateCollisions(int bufferSize, IHashAlgorithm hashAlgorithm, byte[] bytes, int i,
         IDictionary<byte[], int> uniqueHashCounter)
     {
-        var xorHash = xorHashAlgorithm.ComputeHash(bytes, i, bufferSize);
+        var xorHash = hashAlgorithm.ComputeHash(bytes, i, bufferSize);
         if (uniqueHashCounter.TryGetValue(xorHash, out var counter))
         {
             uniqueHashCounter[xorHash] = counter + 1;
