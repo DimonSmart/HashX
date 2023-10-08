@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace DimonSmart.AnyHash.Tests;
+namespace DimonSmart.Hash.Tests;
 
 public class XorHashTests
 {
@@ -40,7 +40,7 @@ public class XorHashTests
     }
 
     [Fact]
-    public void TestAnyHashorFullFilled()
+    public void AllBitsSetTest()
     {
         var h = new XorHash(1);
 

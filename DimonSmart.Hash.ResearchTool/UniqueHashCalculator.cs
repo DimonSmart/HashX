@@ -1,6 +1,6 @@
-﻿using DimonSmart.AnyHash;
+﻿using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.AnyHas.ResearchTool;
+namespace DimonSmart.Hash.ResearchTool;
 
 public static class UniqueHashCalculator
 {

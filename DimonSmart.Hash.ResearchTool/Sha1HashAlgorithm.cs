@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
-using DimonSmart.AnyHash;
+using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.AnyHas.ResearchTool;
+namespace DimonSmart.Hash.ResearchTool;
 
 public class Sha1HashAlgorithm : IHashAlgorithm
 {
@@ -16,5 +16,10 @@ public class Sha1HashAlgorithm : IHashAlgorithm
     public byte[] ComputeHash(byte[] buffer, int offset, int count)
     {
         return SHA1.HashData(buffer.AsSpan(offset, count));
+    }
+
+    public byte[] ComputeHash(ReadOnlySpan<byte> buffer)
+    {
+        return SHA1.HashData(buffer);
     }
 }

@@ -14,11 +14,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DimonSmart.AnyHash\DimonSmart.AnyHash.csproj" />
+      <Folder Include="Data\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\" />
+      <ProjectReference Include="..\DimonSmart.Hash\DimonSmart.Hash.csproj" />
     </ItemGroup>
 
     <ItemGroup>

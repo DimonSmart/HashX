@@ -1,4 +1,4 @@
-﻿namespace DimonSmart.AnyHas.ResearchTool;
+﻿namespace DimonSmart.Hash.ResearchTool;
 
 public class ByteArrayEqualityComparer : IEqualityComparer<byte[]>
 {

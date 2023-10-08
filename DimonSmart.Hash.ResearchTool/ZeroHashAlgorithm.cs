@@ -1,6 +1,6 @@
-﻿using DimonSmart.AnyHash;
+﻿using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.AnyHas.ResearchTool;
+namespace DimonSmart.Hash.ResearchTool;
 
 public class ZeroHashAlgorithm : IHashAlgorithm
 {
@@ -34,11 +34,13 @@ public class ZeroHashAlgorithm : IHashAlgorithm
         return buffer.AsSpan(offset, length).ToArray();
     }
 
-    private void EnsureCorrectCall(byte[] buffer)
+    public byte[] ComputeHash(ReadOnlySpan<byte> buffer)
     {
         if (buffer.Length != HashSize)
         {
-            throw new InvalidOperationException(BlockSIzeMismatchErrorMessage);
+            throw new InvalidOperationException("ZeroHash should be used only with blockSize == HashSize");
         }
+
+        return buffer.ToArray();
     }
 }

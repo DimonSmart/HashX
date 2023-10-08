@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
-using DimonSmart.AnyHash;
+using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.AnyHas.ResearchTool;
+namespace DimonSmart.Hash.ResearchTool;
 
 public class Md5HashAlgorithm : IHashAlgorithm
 {
@@ -16,5 +16,10 @@ public class Md5HashAlgorithm : IHashAlgorithm
     public byte[] ComputeHash(byte[] buffer, int offset, int count)
     {
         return MD5.HashData(buffer.AsSpan(offset, count));
+    }
+
+    public byte[] ComputeHash(ReadOnlySpan<byte> buffer)
+    {
+        return MD5.HashData(buffer);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace DimonSmart.AnyHash;
+﻿using DimonSmart.Hash.Interfaces;
+
+namespace DimonSmart.Hash;
 
 public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
 {
@@ -20,12 +22,14 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
     public byte[] ComputeHash(byte[] buffer)
     {
         Reset();
-        return ComputeHashCore(buffer, 0, buffer.Length);
+        return ComputeHash(new ReadOnlySpan<byte>(buffer));
     }
 
     public byte[] ComputeHash(byte[] buffer, int offset, int count)
     {
         ArgumentNullException.ThrowIfNull(buffer, nameof(buffer));
+        Reset();
+
         if (offset < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(offset));
@@ -38,10 +42,21 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
 
         if (buffer.Length - count < offset)
         {
-            throw new ArgumentException();
+            throw new IndexOutOfRangeException();
         }
 
-        return ComputeHashCore(buffer, offset, count);
+        return ComputeHash(new ReadOnlySpan<byte>(buffer, offset, count));
+    }
+
+    public byte[] ComputeHash(ReadOnlySpan<byte> buffer)
+    {
+        Reset();
+        foreach (var byteValue in buffer)
+        {
+            AddByte(byteValue);
+        }
+
+        return (byte[])Bytes.Clone();
     }
 
     public void AddByte(byte incomingByte)
@@ -52,13 +67,6 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
     public byte[] GetBytes()
     {
         return Bytes;
-    }
-
-    public byte[] ComputeHashCore(byte[] buffer, int offset, int count)
-    {
-        for (var index = offset; index < offset + count; index++) AddByte(buffer[index]);
-
-        return (byte[])Bytes.Clone();
     }
 
     private void Reset()

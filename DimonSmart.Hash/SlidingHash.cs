@@ -1,4 +1,4 @@
-﻿namespace DimonSmart.AnyHash;
+﻿namespace DimonSmart.Hash;
 
 public class SlidingHash
 {

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.CommandLine;
 using System.Text.Json;
-using DimonSmart.AnyHash;
 
-namespace DimonSmart.AnyHas.ResearchTool;
+namespace DimonSmart.Hash.ResearchTool;
 
 internal class Program
 {
@@ -66,10 +65,11 @@ internal class Program
 
                     // XorHash. Size variation from minHashLength to MaxHashLength (SHA1 length)
 
+                    var size = bufferSize;
                     Parallel.For(minHashLength, maxHashLength, i =>
                     {
-                        var xorHashAlgorithm = AnyHashFactory.CreateHashAlgorithm(i);
-                        var xorResult = UniqueHashCalculator.Calculate(xorHashAlgorithm, files, bufferSize);
+                        var xorHashAlgorithm = HashFactory.CreateHashAlgorithm(i);
+                        var xorResult = UniqueHashCalculator.Calculate(xorHashAlgorithm, files, size);
                         lock (files)
                         {
                             Console.WriteLine(xorResult);

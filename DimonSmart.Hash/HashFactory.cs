@@ -1,6 +1,8 @@
-﻿namespace DimonSmart.AnyHash;
+﻿using DimonSmart.Hash.Interfaces;
 
-public static class AnyHashFactory
+namespace DimonSmart.Hash;
+
+public static class HashFactory
 {
     public static IHashAlgorithm CreateHashAlgorithm(int hashLength)
     {
