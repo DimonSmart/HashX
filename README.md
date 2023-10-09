@@ -31,8 +31,7 @@ csharp
 
 **Freedom to Select Hash Size**: XorHash offers the unique advantage of allowing users to precisely customize the hash size in bytes, even at runtime. This flexibility empowers developers to adapt the hash function according to the specific requirements of their applications, ensuring that the hash size in bytes aligns perfectly with the data they are working with.
 
-**Top 5 Hash Functions and Their Sizes**:
-Certainly, here's the information formatted as a table for a Markdown file:
+**Top 5 Hash Functions and Their Sizes**
 
 | Hash Function        | Description                              | Hash Size (Bits) | Hash Size (Bytes) |
 |----------------------|------------------------------------------|------------------|-------------------|
@@ -41,15 +40,15 @@ Certainly, here's the information formatted as a table for a Markdown file:
 | SHA-1                | Secure Hash Algorithm                    | 160              | 20                |
 | CRC32                | Cyclic Redundancy Check                  | 32               | 4                 |
 
-Corellation between Hash Size and Input Buffer:
+## Corellation between Hash Size and Input Buffer ##
 
 **One Byte Input**: In the edge case where the input is just one byte, a one-byte hash is sufficient and 100% collision-free, as there is only one possible input and, consequently, only one possible hash value.
 
 **Two Bytes Input**: With a two-byte input, there are 65536 (2^16) possible unique inputs. If you use a one-byte hash, it would lead to a 99.9985% collision rate because there are only 256 (2^8) possible hash values. To achieve a collision-free hashing in this scenario, you should use a two-byte hash, which provides 65,536 (2^16) unique hash values, matching the number of possible inputs.
 
-Title: Selecting Appropriate Hash Size Depending on Buffer Size: Minimizing Collision Probability and Ensuring Security
+###Selecting Appropriate Hash Size Depending on Buffer Size###
 
-**Selecting Appropriate Hash Size Depending on Buffer Size*: When designing an application that uses hash functions, it's essential to consider realistic parameters such as the file size and buffer size. In practice, very often, we can't examine all possible input buffer values; only a subset of them are relevant for a given application.
+**Selecting Appropriate Hash Size Depending on Buffer Size**: When designing an application that uses hash functions, it's essential to consider realistic parameters such as the file size and buffer size. In practice, very often, we can't examine all possible input buffer values; only a subset of them are relevant for a given application.
 
 For example, consider the scenario where a hashing algorithm is applied to a sliding window of 256 bytes over a 1024 KB file to generate hashes. In this case, we can calculate the actual number of relevant input buffer values, which is 1,048,321. Using this information, we can analyze the probability of hash collisions and choose an appropriate hash size accordingly.
 
