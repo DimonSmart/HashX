@@ -1,6 +1,6 @@
 ﻿using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.Hash.ResearchTool;
+namespace DimonSmart.Hash;
 
 public class ZeroHashAlgorithm : IHashAlgorithm
 {
