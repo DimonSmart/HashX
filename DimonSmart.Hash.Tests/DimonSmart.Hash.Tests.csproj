@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BenchmarkDotNet" Version="0.13.9" />
+		<PackageReference Include="DimonSmart.TinyBenchmark" Version="1.0.7-beta" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
 		<PackageReference Include="xunit" Version="2.5.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">
@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DimonSmart.Hash\DimonSmart.Hash.csproj" />
+		<ProjectReference Include="..\DimonSmart.Hash\DimonSmart.Hash.csproj" />
 	</ItemGroup>
 
 </Project>

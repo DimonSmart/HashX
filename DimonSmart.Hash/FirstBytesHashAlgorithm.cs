@@ -28,7 +28,7 @@ public class FirstBytesHashAlgorithm : IHashAlgorithm
     public byte[] ComputeHash(byte[] buffer, int offset, int length)
     {
         return buffer
-            .AsSpan(offset, buffer.Length > (HashSize + offset) ? HashSize : buffer.Length)
+            .AsSpan(offset, buffer.Length > HashSize + offset ? HashSize : buffer.Length)
             .ToArray();
     }
 

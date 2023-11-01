@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using DimonSmart.Hash.Interfaces;
 
-namespace DimonSmart.Hash.ResearchTool;
+namespace DimonSmart.Hash;
 
 public class Md5HashAlgorithm : IHashAlgorithm
 {

@@ -1,47 +1,41 @@
-﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Exporters;
-using BenchmarkDotNet.Running;
-using Xunit;
+﻿using DimonSmart.TinyBenchmark.Attributes;
 
 namespace DimonSmart.Hash.Tests;
 
-[RPlotExporter]
-[DryJob]
 public class HashBenchmarkTests
 {
     private static readonly byte[] Bytes = GenerateRandomByteArray(1024);
 
+    [TinyBenchmarkRangeParameter(1, 60, 5)]
+    public int N { get; set; }
 
-    [Params(1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128)]
-    public int N = 1;
-    public int HashSize { get; set; }
-
-    [Benchmark]
-    [Fact]
-    public void XorHashTest()
+    [TinyBenchmark]
+    public void XorHashTest(int n)
     {
-        var hashAlgorithm = new XorHash(N);
+        var hashAlgorithm = new XorHash(n);
+        _ = hashAlgorithm.ComputeHash(Bytes);
+    }
+
+    [TinyBenchmark]
+    public void MD5HashTest(int n)
+    {
+        var hashAlgorithm = new Md5HashAlgorithm();
         var result = hashAlgorithm.ComputeHash(Bytes);
     }
 
-    [Benchmark(Baseline = true)]
-    [Fact]
+    [TinyBenchmark]
+    public void SHA1HashTest(int n)
+    {
+        var hashAlgorithm = new Sha1HashAlgorithm();
+        var result = hashAlgorithm.ComputeHash(Bytes);
+    }
+
     public void FirstBytesHashTest()
     {
         var hashAlgorithm = new FirstBytesHashAlgorithm(N);
         var result = hashAlgorithm.ComputeHash(Bytes);
     }
 
-    [Fact]
-    public void BenchMarkRunner()
-    {
-        var config =  ManualConfig.CreateMinimumViable();
-        // config.AddExporter(CsvMeasurementsExporter.Default);
-        config.AddExporter(RPlotExporter.Default);
-
-        BenchmarkRunner.Run<HashBenchmarkTests>(config);
-    }
 
     public static byte[] GenerateRandomByteArray(int length)
     {
