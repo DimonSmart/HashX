@@ -2,32 +2,32 @@
 
 namespace DimonSmart.Hash.Tests;
 
-public class HashBenchmarkTests
+public class VariableHashBufferBenchmarkTests
 {
     private static readonly byte[] Bytes = GenerateRandomByteArray(1024);
 
-    [TinyBenchmarkRangeParameter(1, 60, 5)]
+    [TinyBenchmarkRangeParameter(1, 64, 2)]
     public int N { get; set; }
 
     [TinyBenchmark]
-    public void XorHashTest(int n)
+    public void XorHashTest16Bytes(int n)
     {
-        var hashAlgorithm = new XorHash(n);
-        _ = hashAlgorithm.ComputeHash(Bytes);
+        var hashAlgorithm = new XorHash(16);
+        _ = hashAlgorithm.ComputeHash(Bytes.AsSpan(0, n));
     }
 
     [TinyBenchmark]
     public void MD5HashTest(int n)
     {
         var hashAlgorithm = new Md5HashAlgorithm();
-        var result = hashAlgorithm.ComputeHash(Bytes);
+        var result = hashAlgorithm.ComputeHash(Bytes.AsSpan(0, n));
     }
 
     [TinyBenchmark]
     public void SHA1HashTest(int n)
     {
         var hashAlgorithm = new Sha1HashAlgorithm();
-        var result = hashAlgorithm.ComputeHash(Bytes);
+        var result = hashAlgorithm.ComputeHash(Bytes.AsSpan(0, n));
     }
 
     public void FirstBytesHashTest()
@@ -35,7 +35,6 @@ public class HashBenchmarkTests
         var hashAlgorithm = new FirstBytesHashAlgorithm(N);
         var result = hashAlgorithm.ComputeHash(Bytes);
     }
-
 
     public static byte[] GenerateRandomByteArray(int length)
     {

@@ -1,6 +1,7 @@
 ﻿using DimonSmart.TinyBenchmark;
 using Xunit;
 using Xunit.Abstractions;
+using static DimonSmart.TinyBenchmark.Exporters.IGraphExporter.GraphExportOption;
 
 namespace DimonSmart.Hash.Tests;
 
@@ -18,15 +19,14 @@ public class HashBenchmarkRunner
     {
         TinyBenchmarkRunner
             .Create(_output.WriteLine)
-            .WithRunCountLimits(500, 2000)
-            .WithMaxRunExecutionTime(TimeSpan.FromSeconds(15))
-            // .WithBestTimeAsResult()
+            .WinMinMaxFunctionExecutionCount(1000, 100000)
+            .WithMaxRunExecutionTime(TimeSpan.FromSeconds(30))
             .Run()
-            .WithCsvExporter()
-            .SaveRawResults()
+            //.WithCsvExporter()
+            //.SaveRawResults()
             .WithGraphExporter()
-            .ExportAllRawGraph(SortTimeDirection.AscendingTimes)
-            .ExportAllRawGraph()
-            .ExportAllFunctionsCompareGraph();
+            //.ExportAllRawGraph(SortTimeDirection.AscendingTimes)
+            //.ExportAllRawGraph()
+            .ExportAllFunctionsCompareGraph(IncludeErrorMarks);
     }
 }
