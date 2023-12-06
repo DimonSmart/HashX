@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Welcome to the documentation for XorHash! This library offers a flexible hash function implementation with two unique features:
+Welcome to the documentation for XorHash! This library offers a variable length hash function implementation with two unique features:
 
 1. **Customizable Hash Size**: With XorHash, you have the freedom to tailor the hash size to your exact requirements. Whether you need a compact 32-bit hash or want to explore even smaller 1-byte hash sizes for educational purposes to demonstrate high collision edge cases, this function empowers you to select the hash size that aligns perfectly with your application's needs.
 

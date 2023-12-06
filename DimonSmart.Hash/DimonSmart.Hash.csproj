@@ -4,6 +4,33 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+
+		<PackageId>DimonSmart.Hash</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Dmitry Dorogoy</Authors>
+		<Company>DimonSmart</Company>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<PackageTags>Hash;Xor;XorHash;Variable Length;Variable Length Hash;</PackageTags>
+
+		<Description>Variable length hash function implementation</Description>
+		<RepositoryUrl>https://github.com/DimonSmart/HashX</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>0BSD</PackageLicenseExpression>
+
+		<Title>XorHash</Title>
+		<Copyright>FREE</Copyright>
+		<PackageProjectUrl>https://github.com/DimonSmart/HashX</PackageProjectUrl>
+		<PackageIcon>XorHash.png</PackageIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\readme.md" Pack="true" PackagePath="\" />
+		<None Include="docs\Images\XorHash.png" Pack="True" PackagePath="\" />
+	</ItemGroup>
+
 
 </Project>
