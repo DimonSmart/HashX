@@ -1,8 +1,12 @@
 ﻿namespace DimonSmart.Hash.Interfaces;
 
+/// <summary>
+/// Defines the size, in bits, of the computed hash code.
+/// </summary>
 public interface IHashSize
 {
-    /// <summary>Gets the size, in bits, of the computed hash code.</summary>
-    /// <returns>The size, in bits, of the computed hash code.</returns>
-    public int HashSize { get; }
+    /// <summary>
+    /// Gets the size, in bits, of the computed hash code.
+    /// </summary>
+    int HashSize { get; }
 }
