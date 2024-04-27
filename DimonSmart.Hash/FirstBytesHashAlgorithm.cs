@@ -3,19 +3,14 @@
 namespace DimonSmart.Hash;
 
 /// <summary>
-/// Performance base-line algorithm only!
-/// This algorithm simply treat cut first HashSize bytes from buffer as hash
+/// A performance baseline algorithm demonstration.
+/// This algorithm simply cuts and returns the first 'HashSize' bytes from the buffer as the hash.
 /// Do not use it as a real hash function.
-/// This HashAlgorithm is for educational purposes only.
+/// This HashAlgorithm is intended for educational purposes only.
 /// </summary>
-public class FirstBytesHashAlgorithm : IHashAlgorithm
+public class FirstBytesHashAlgorithm(int hashSize) : IHashAlgorithm
 {
-    public FirstBytesHashAlgorithm(int hashSize)
-    {
-        HashSize = hashSize;
-    }
-
-    public int HashSize { get; }
+    public int HashSize { get; } = hashSize;
     public string Name => "CutHash";
 
     public byte[] ComputeHash(byte[] buffer)
