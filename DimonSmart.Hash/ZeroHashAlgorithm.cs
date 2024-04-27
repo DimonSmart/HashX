@@ -2,16 +2,11 @@
 
 namespace DimonSmart.Hash;
 
-public class ZeroHashAlgorithm : IHashAlgorithm
+public class ZeroHashAlgorithm(int hashSize) : IHashAlgorithm
 {
     private const string BlockSIzeMismatchErrorMessage = "ZeroHash should be used only with blockSize == HashSize";
 
-    public ZeroHashAlgorithm(int hashSize)
-    {
-        HashSize = hashSize;
-    }
-
-    public int HashSize { get; }
+    public int HashSize { get; } = hashSize;
     public string Name => "Zero";
 
     public byte[] ComputeHash(byte[] buffer)

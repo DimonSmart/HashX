@@ -1,15 +1,9 @@
 ﻿namespace DimonSmart.Hash;
 
-public class SlidingHash
+public class SlidingHash(int hashLength, int slidingBufferSize)
 {
-    private readonly HashRoller _hashRoller;
-    private readonly Queue<byte> _slidingBuffer;
-
-    public SlidingHash(int hashLength, int slidingBufferSize)
-    {
-        _hashRoller = new HashRoller(hashLength);
-        _slidingBuffer = new Queue<byte>(slidingBufferSize);
-    }
+    private readonly HashRoller _hashRoller = new(hashLength);
+    private readonly Queue<byte> _slidingBuffer = new Queue<byte>(slidingBufferSize);
 
     public void Add(byte incomingByte)
     {
@@ -28,17 +22,13 @@ public class SlidingHash
         return _hashRoller.GetBytes();
     }
 
-    internal class HashRoller : XorHash
+    internal class HashRoller(int hashLength) : XorHash(hashLength)
     {
-        private int currentXorPositionForSubtract;
-
-        public HashRoller(int hashLength) : base(hashLength)
-        {
-        }
+        private int _currentXorPositionForSubtract;
 
         public void SubstractByte(byte incomingByte)
         {
-            currentXorPositionForSubtract = XorByte(incomingByte, currentXorPositionForSubtract);
+            _currentXorPositionForSubtract = XorByte(incomingByte, _currentXorPositionForSubtract);
         }
     }
 }

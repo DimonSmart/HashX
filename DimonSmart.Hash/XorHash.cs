@@ -4,15 +4,15 @@ namespace DimonSmart.Hash;
 
 public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
 {
-    protected byte[] Bytes;
-    protected int CurrentXorPositionForAdd;
-    protected int LengthInBits;
+    private readonly byte[] _bytes;
+    private readonly int _lengthInBits;
+    private int _currentXorPositionForAdd;
 
     public XorHash(int hashSize)
     {
         HashSize = hashSize;
-        Bytes = new byte[HashSize];
-        LengthInBits = 8 * HashSize;
+        _bytes = new byte[HashSize];
+        _lengthInBits = 8 * HashSize;
     }
 
     public int HashSize { get; }
@@ -56,41 +56,41 @@ public class XorHash : IHashAlgorithm, IIncrementalHashAlgorithm
             AddByte(byteValue);
         }
 
-        return (byte[])Bytes.Clone();
+        return (byte[])_bytes.Clone();
     }
 
     public void AddByte(byte incomingByte)
     {
-        CurrentXorPositionForAdd = XorByte(incomingByte, CurrentXorPositionForAdd);
+        _currentXorPositionForAdd = XorByte(incomingByte, _currentXorPositionForAdd);
     }
 
     public byte[] GetBytes()
     {
-        return Bytes;
+        return _bytes;
     }
 
     private void Reset()
     {
-        CurrentXorPositionForAdd = 0;
-        Bytes.Initialize();
+        _currentXorPositionForAdd = 0;
+        _bytes.Initialize();
     }
 
     protected int XorByte(byte incomingByte, int position)
     {
-        var firstBytePos = position / 8 % Bytes.Length;
-        var secondBytePos = (position + 8) / 8 % Bytes.Length;
+        var firstBytePos = position / 8 % _bytes.Length;
+        var secondBytePos = (position + 8) / 8 % _bytes.Length;
 
         var shift = position % 8;
         var incomingPartForFirstByte = (byte)(incomingByte << shift);
-        Bytes[firstBytePos] ^= incomingPartForFirstByte;
+        _bytes[firstBytePos] ^= incomingPartForFirstByte;
 
         if (shift != 0)
         {
             var incomingPartForSecondByte = (byte)(incomingByte >> (8 - shift));
-            Bytes[secondBytePos] ^= incomingPartForSecondByte;
+            _bytes[secondBytePos] ^= incomingPartForSecondByte;
         }
 
-        position = (position + 1) % LengthInBits;
+        position = (position + 1) % _lengthInBits;
         return position;
     }
 }

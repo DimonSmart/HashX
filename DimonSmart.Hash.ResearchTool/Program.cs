@@ -4,18 +4,34 @@ using System.Text.Json;
 
 namespace DimonSmart.Hash.ResearchTool;
 
-internal class Program
+internal static class Program
 {
     private static void Main(string[] args)
     {
+        var algorithmsArg = new Option<HashAlgorithm>(
+            "--Algorithm",
+            "Algorithms to perform calculations"); // { Arity = ArgumentArity.OneOrMore };
+        algorithmsArg.AddValidator(result =>
+        {
+            var values = result.Tokens.Select(t => t.Value).ToList();
+            var duplicates = values.GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key).ToList();
+            if (duplicates.Any())
+            {
+                result.ErrorMessage = $"Duplicate algorithm(s) detected: {string.Join(", ", duplicates)}. Each algorithm should be specified only once.";
+            }
+        });
         var minBufferSizeArg = new Option<int>(
             "--MinBufferSize",
             () => 1,
-            "Max Buffer size (hashed block), bytes.");
+            "Min Buffer size (hashed block), bytes.");
         var maxBufferSizeArg = new Option<int>(
             "--MaxBufferSize",
             () => 1,
             "Max Buffer size (hashed block), bytes.");
+        var bufferSizeStepArg = new Option<int>(
+            "--BufferSizeStep",
+            () => 1,
+            "Buffer size step from MinBufferSize to MaxBufferSize");
         var minHashLengthArg = new Option<int>(
             "--MinHashLength",
             () => 2,
@@ -33,16 +49,9 @@ internal class Program
             "--RootFolder",
             "Root folder for hash collision statistic calculation.");
 
-        var rootCommand = new RootCommand("Hash collision research");
-        rootCommand.AddOption(minBufferSizeArg);
-        rootCommand.AddOption(maxBufferSizeArg);
-        rootCommand.AddOption(minHashLengthArg);
-        rootCommand.AddOption(maxHashLengthArg);
-        rootCommand.AddOption(resultFileNameArg);
-        rootCommand.AddArgument(rootFolderArg);
-
-        rootCommand.SetHandler(
-            (minBufferSize, maxBufferSize, minHashLength, maxHashLength, resultFileName, rootFolder) =>
+        var uniqueCommand = new Command("unique", "Calculate unique hashes (vs collision)");
+        uniqueCommand.SetHandler(
+            (rootFolder, algorithms, minBufferSize, maxBufferSize, resultFileName) =>
             {
                 var files = Directory.EnumerateFiles(rootFolder)
                     .Where(f => new FileInfo(f).Length > maxBufferSize)
@@ -66,9 +75,34 @@ internal class Program
                     var sha1Result = UniqueHashCalculator.Calculate(new Sha1HashAlgorithm(), files, bufferSize);
                     finalResults.Add(sha1Result);
                     Console.WriteLine(sha1Result);
+                }
 
-                    // XorHash. Size variation from minHashLength to MaxHashLength (SHA1 length)
+                Console.WriteLine("Calculation finished");
+                File.WriteAllText(resultFileName,
+                    JsonSerializer.Serialize(finalResults
+                        .OrderBy(r => r.BufferSize)
+                        .ThenBy(r => r.AlgorithmName)
+                        .ThenBy(r => r.HashLength)
+                        .ToArray()
+                    ));
+                foreach (var result in finalResults)
+                {
+                    Console.WriteLine($"{result}");
+                }
+            }, rootFolderArg, algorithmsArg, minBufferSizeArg, maxBufferSizeArg, resultFileNameArg );
 
+
+        var hashSizeCommand = new Command("hash-size", "Calculate different hash sizes (for XorHashOnly");
+        hashSizeCommand.SetHandler(
+            (minBufferSize, maxBufferSize, minHashLength, maxHashLength, resultFileName, rootFolder) =>
+            {
+                var files = Directory.EnumerateFiles(rootFolder)
+                    .Where(f => new FileInfo(f).Length > maxBufferSize)
+                    .ToList();
+                var finalResults = new ConcurrentBag<UniqueCalculationResult>();
+                for (var bufferSize = minBufferSize; bufferSize <= maxBufferSize; bufferSize++)
+                {
+                    Console.WriteLine($"BufferSize:{bufferSize}");
                     var size = bufferSize;
                     Parallel.For(minHashLength, maxHashLength, i =>
                     {
@@ -84,7 +118,7 @@ internal class Program
                 }
 
                 Console.WriteLine("Calculation finished");
-                File.WriteAllText(resultFileName, 
+                File.WriteAllText(resultFileName,
                     JsonSerializer.Serialize(finalResults
                         .OrderBy(r => r.BufferSize)
                         .ThenBy(r => r.AlgorithmName)
@@ -97,6 +131,11 @@ internal class Program
                 }
             },
             minBufferSizeArg, maxBufferSizeArg, minHashLengthArg, maxHashLengthArg, resultFileNameArg, rootFolderArg);
+
+        var rootCommand = new RootCommand("Hash collision research");
+        rootCommand.AddCommand(uniqueCommand);
+        rootCommand.AddCommand(hashSizeCommand);
+
         rootCommand.Invoke(args);
     }
 }
