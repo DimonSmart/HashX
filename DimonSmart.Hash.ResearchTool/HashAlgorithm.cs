@@ -1,9 +1,10 @@
-﻿namespace DimonSmart.Hash.ResearchTool;
+﻿// ReSharper disable InconsistentNaming
+namespace DimonSmart.Hash.ResearchTool;
 
 public enum HashAlgorithm
 {
-    ZeroHash,
-    XorHash,
-    Sha1Hash,
-    Md5Hash,
+    ZERO,
+    XOR,
+    SHA1,
+    MD5,
 }
