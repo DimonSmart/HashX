@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DimonSmart.Hash\DimonSmart.Hash.csproj" />
+		<ProjectReference Include="..\DimonSmart.HashX\DimonSmart.HashX.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
