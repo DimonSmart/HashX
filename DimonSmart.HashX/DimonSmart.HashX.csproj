@@ -22,12 +22,12 @@
 		<Title>XorHash</Title>
 		<Copyright>FREE</Copyright>
 		<PackageProjectUrl>https://github.com/DimonSmart/HashX</PackageProjectUrl>
-		<PackageIcon>XorHash.png</PackageIcon>
+		<PackageIcon>XorHash-small.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\readme.md" Pack="true" PackagePath="\" />
-		<None Include="docs\Images\XorHash.png" Pack="True" PackagePath="\" />
+		<None Include="docs\Images\*.png" Pack="True" PackagePath="\" />
 	</ItemGroup>
 
 
