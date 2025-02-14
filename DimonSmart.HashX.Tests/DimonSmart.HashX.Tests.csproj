@@ -17,10 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Data\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\DimonSmart.HashX\DimonSmart.HashX.csproj" />
 	</ItemGroup>
 
